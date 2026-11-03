@@ -5,10 +5,10 @@
 class Norn < Formula
   desc "Local temporal data engine with gRPC and optional MCP"
   homepage "https://github.com/shokki-engineering/norn"
-  version "0.1.0"
+  version "1.0.0-rc.1"
   license "AGPL-3.0-or-later"
 
-  # Same private-release download strategy as bacnet-rs a534df3.
+  # Downloads release assets through the GitHub asset API.
   # Without an environment token, curl may use an explicitly enabled .netrc.
   download_headers = ["Accept: application/octet-stream"]
   token = ENV["HOMEBREW_GITHUB_API_TOKEN"]
@@ -16,31 +16,31 @@ class Norn < Formula
 
   on_macos do
     on_arm do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/704842082",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527573",
           using:   :curl,
           headers: download_headers
-      sha256 "89dbd3bbd13142ff4b35a8458c8767bcd2423cb8f7201a3e247b2f5dc4e1bf50"
+      sha256 "78e30bb4f4fda3bc14a654a50db7992f3ae27ba8e5b3edf95f2a4e800cb377c2"
     end
     on_intel do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/704842084",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527580",
           using:   :curl,
           headers: download_headers
-      sha256 "f4b94b8f9204f3d2c5d0b0bd6574898f5ce4045d9d92fe140a79d8c13af46ab7"
+      sha256 "e67df183e170cec355021f12638a9cc616e9f1bf5b6aabbdeb5cbf33f1b3ab6e"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/704842079",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527569",
           using:   :curl,
           headers: download_headers
-      sha256 "45ea275d292fe1523c9113307bc72297335f3e37069477192d9e05fa678e6a3d"
+      sha256 "3c54f097739aeb0e2583c36adb9cb3b1fa3e5681f84fd158acba6b909ceee9ca"
     end
     on_intel do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/704842118",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527703",
           using:   :curl,
           headers: download_headers
-      sha256 "0238e166a025d301de33c5fdee3359b598ea7dae1ee9aafa058a46a7ec378afc"
+      sha256 "1132e5ac021eb32f4c5892aac57f8b5e8338a01e4a78c9ed358bc9852d12f19d"
     end
   end
 
@@ -55,7 +55,7 @@ class Norn < Formula
     TOML
     (etc/"norn").install "norn.toml"
     pkgshare.install "docs"
-    prefix.install "LICENSES"
+    prefix.install "LICENSE", "LICENSE-COMMERCIAL.md"
   end
 
   post_install_steps do
