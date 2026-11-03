@@ -33,7 +33,9 @@ Keep tokens out of formulae, documentation, and commits. Follow the package's up
 
 <!-- BEGIN GENERATED FORMULA LIST -->
 
-_None available yet._
+| Formula | Description | Install |
+| --- | --- | --- |
+| `norn` | Local temporal data engine with gRPC and optional MCP | `brew install shokki-engineering/tap/norn` |
 
 <!-- END GENERATED FORMULA LIST -->
 
