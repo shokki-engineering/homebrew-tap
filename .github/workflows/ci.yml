@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Ruby and metadata (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+      - name: Install test dependency
+        run: gem install minitest --version '~> 5.0' --no-document
+      - name: Validate all Ruby syntax
+        run: |
+          while IFS= read -r file; do
+            ruby -c "$file"
+          done < <(find scripts test Formula Casks -name '*.rb' -type f | sort)
+      - name: Test README generation
+        run: ruby test/update_readme_test.rb
+      - name: Validate package metadata
+        run: ruby scripts/update_readme.rb
+      - name: Check README sync
+        # Main is refreshed by README Sync. PRs must include generated changes.
+        continue-on-error: ${{ github.event_name == 'push' }}
+        run: git diff --exit-code -- README.md
+      - name: Check Homebrew package style
+        if: runner.os == 'macOS'
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          packages=()
+          while IFS= read -r file; do
+            packages+=("$file")
+          done < <(find Formula Casks -name '*.rb' -type f | sort)
+          if [ "${#packages[@]}" -eq 0 ]; then
+            echo "No published packages to style-check yet."
+          else
+            brew style "${packages[@]}"
+          fi

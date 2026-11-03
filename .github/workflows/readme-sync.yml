@@ -1,0 +1,63 @@
+name: README Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Formula/**'
+      - 'Casks/**'
+      - 'README.md'
+      - 'scripts/**'
+      - 'test/**'
+      - '.github/workflows/readme-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: readme-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Never auto-commit to a feature branch selected in workflow_dispatch.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+      - name: Install test dependency
+        run: gem install minitest --version '~> 5.0' --no-document
+      - name: Test README generation
+        run: ruby test/update_readme_test.rb
+      - name: Generate and commit README package lists
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            echo "README sync attempt $attempt"
+            git pull --ff-only origin main
+            ruby scripts/update_readme.rb
+            ruby scripts/update_readme.rb --check
+            if git diff --quiet -- README.md; then
+              echo "README already in sync."
+              exit 0
+            fi
+            git add README.md
+            git commit -m "docs: sync README package lists"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            # A release may have landed while we generated the tables.
+            # This checkout is disposable; regenerate from the latest main.
+            git fetch origin main
+            git reset --hard origin/main
+          done
+          echo "Could not push README updates after three attempts." >&2
+          exit 1
