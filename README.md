@@ -77,16 +77,43 @@ brew test shokki-engineering/tap/<name>
 For a cask, run `brew style Casks/<name>.rb`, `brew audit --cask --strict shokki-engineering/tap/<name>`, and `brew install --cask shokki-engineering/tap/<name>`; `brew test` applies to formulae.
 CI checks all Ruby files for syntax errors, tests the generator on macOS and Linux, and checks package definitions with `brew style` on macOS. README drift blocks package PRs; on `main` it produces a warning while README Sync commits the refreshed tables. Package downloads, audits, installation, and service behavior must be verified when a real release is available.
 
-### Connecting Norn releases
+### Norn 0.1.0 daemon
 
-[Norn](https://github.com/shokki-engineering/norn) is the planned first package. Its release workflow should:
+[Norn 0.1.0](https://github.com/shokki-engineering/norn/releases/tag/v0.1.0)
+is the first release of the temporal data engine. Its complete package includes
+the `norn` daemon, `nornctl`, CSV/Parquet/Arrow/MCAP interchange, a built-in MCP
+server, documentation and licences. Once its release publishes the formula:
 
-1. Publish the platform archives and checksums, then generate `norn.rb` from those release assets.
-2. Use `HOMEBREW_TAP_TOKEN` with Contents write access to `shokki-engineering/homebrew-tap` to update `Formula/norn.rb`.
-3. Preserve this tap's README, scripts, and workflows. Remove the existing `cp tap-README.md tap/README.md` step from Norn's workflow.
-4. Run `ruby scripts/update_readme.rb` in the tap checkout and commit `Formula/norn.rb` together with `README.md`. This also keeps the README current when publishing with a GitHub Actions token that does not trigger another workflow.
+```sh
+brew install shokki-engineering/tap/norn
+brew services start norn
+nornctl --endpoint "unix:$(brew --prefix)/var/run/norn/norn.sock" status
+```
 
-After the first formula is published, its install command will appear above. Follow Norn's [Homebrew guide](https://github.com/shokki-engineering/norn/blob/main/docs/guides/homebrew.md) for authentication, configuration, services, and health checks.
+The status must contain `SERVING`. The service runs in the background and at
+login on macOS through launchd, or as a systemd user service on Linux. Run it
+without `sudo`. Installation alone does not start it. `brew services list`
+shows the daemon; `brew services stop norn` stops it and removes its login
+registration.
+
+Configuration is `$(brew --prefix)/etc/norn/norn.toml`, preserved on upgrades;
+data is in `$(brew --prefix)/var/norn`, and logs are in
+`$(brew --prefix)/var/log/norn.log`. MCP is off by default. After an upgrade,
+run `brew services restart norn` and check status again. Norn's public archives
+need no download token.
+
+Norn's release workflow publishes platform archives and SHA-256 checksums,
+generates `Formula/norn.rb`, regenerates the README package table with
+`ruby scripts/update_readme.rb`, and commits both files as **Walle**
+(`walle@shokki.engineering`). It preserves this tap's other content.
+Its `HOMEBREW_TAP_TOKEN` secret is a fine-grained PAT restricted to this tap
+with Contents read/write access; the workflow verifies write access before
+building. PAT authentication uses its owner's account; Walle is the Git
+author and committer identity.
+
+See Norn's [changelog](https://github.com/shokki-engineering/norn/blob/main/docs/project/changelog.md)
+and [Homebrew guide](https://github.com/shokki-engineering/norn/blob/main/docs/guides/homebrew.md)
+for release setup, configuration and health checks.
 
 ## Reporting problems
 
