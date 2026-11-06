@@ -5,7 +5,7 @@
 class Norn < Formula
   desc "Local temporal data engine with gRPC and optional MCP"
   homepage "https://github.com/shokki-engineering/norn"
-  version "1.0.0-rc.1"
+  version "1.0.0-rc.2"
   license "AGPL-3.0-or-later"
 
   # Downloads release assets through the GitHub asset API.
@@ -16,31 +16,31 @@ class Norn < Formula
 
   on_macos do
     on_arm do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527573",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/716422575",
           using:   :curl,
           headers: download_headers
-      sha256 "78e30bb4f4fda3bc14a654a50db7992f3ae27ba8e5b3edf95f2a4e800cb377c2"
+      sha256 "7a1498808dce722a80caaa349428f586f350f1042e968e9cebca70eee6b2e13d"
     end
     on_intel do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527580",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/716422578",
           using:   :curl,
           headers: download_headers
-      sha256 "e67df183e170cec355021f12638a9cc616e9f1bf5b6aabbdeb5cbf33f1b3ab6e"
+      sha256 "84f7da173d6558faaaf4076b6581faf984701e1a003bb4506290290f8adb3b96"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527569",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/716422583",
           using:   :curl,
           headers: download_headers
-      sha256 "3c54f097739aeb0e2583c36adb9cb3b1fa3e5681f84fd158acba6b909ceee9ca"
+      sha256 "0adf43635ff0783e128fb14a79ded29bae1c316845f7107cff1d24245b34588d"
     end
     on_intel do
-      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/706527703",
+      url "https://api.github.com/repos/shokki-engineering/norn/releases/assets/716422686",
           using:   :curl,
           headers: download_headers
-      sha256 "1132e5ac021eb32f4c5892aac57f8b5e8338a01e4a78c9ed358bc9852d12f19d"
+      sha256 "5947799842db3a2312e2f0320762c90c1c295c460bf53bea949719a58488c7cb"
     end
   end
 
